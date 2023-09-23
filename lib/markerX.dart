@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
@@ -18,6 +19,7 @@ class MarkerX {
   final AlignmentGeometry? rotateAlignment;
   final void Function(Canvas canvas, Offset offset) onDraw;
   final Stream<dynamic>? stream;
+
   MarkerX({
     required this.point,
     this.key,
@@ -26,10 +28,14 @@ class MarkerX {
     this.rotate,
     this.rotateOrigin,
     this.rotateAlignment,
-    AnchorPos<dynamic>? anchorPos,
+    AnchorPos? anchorPos,
     required this.onDraw,
     this.stream,
-  }) : anchor = Anchor.forPos(anchorPos, width, height);
+  }) : anchor = Anchor.fromPos(
+          anchorPos ?? AnchorPos.align(AnchorAlign.center),
+          width,
+          height,
+        );
 }
 
 class MarkerLayerX extends StatefulWidget {
@@ -37,6 +43,7 @@ class MarkerLayerX extends StatefulWidget {
   final bool rotate;
   final Offset? rotateOrigin;
   final AlignmentGeometry? rotateAlignment;
+
   const MarkerLayerX({
     Key? key,
     this.markers = const [],
@@ -44,6 +51,7 @@ class MarkerLayerX extends StatefulWidget {
     this.rotateOrigin,
     this.rotateAlignment = Alignment.center,
   }) : super(key: key);
+
   @override
   State<MarkerLayerX> createState() => _MarkerLayerXState();
 }
@@ -107,7 +115,7 @@ class _MarkerLayerXState extends State<MarkerLayerX> {
       _cachedBounds = newBound;
       markerQuadtree =
           MarkerQuadtree(newBound!, 5000); // adjust capacity as needed
-      _putMarkers(newBound!, widget.markers);
+      _putMarkers(newBound, widget.markers);
       visibleMarkers = _getVisibleMarkers();
     }
     final markerWidgets = visibleMarkers.map((marker) {
@@ -163,9 +171,12 @@ class _MarkerLayerXState extends State<MarkerLayerX> {
 
 class _MarkerPainter extends CustomPainter {
   final void Function(Canvas canvas, Offset offset) onDraw;
+
   const _MarkerPainter(this.onDraw);
+
   @override
   void paint(Canvas canvas, Size size) => onDraw(canvas, Offset.zero);
+
   @override
   bool shouldRepaint(_MarkerPainter oldDelegate) => false;
 }

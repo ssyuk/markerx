@@ -4,7 +4,7 @@ import 'package:latlong2/latlong.dart';
 
 class MarkerProvider extends ChangeNotifier {
   double mapZoom = 7;
-  late LatLngBounds? latLngB = LatLngBounds(LatLng(0, 0), LatLng(0, 0));
+  late LatLngBounds? latLngB = LatLngBounds(const LatLng(0, 0), const LatLng(0, 0));
 
   void setZoom(double zoom, LatLngBounds? latLngBounds) {
     mapZoom = zoom;

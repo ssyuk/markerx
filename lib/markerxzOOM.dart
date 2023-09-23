@@ -15,6 +15,7 @@ class MarkerX {
   final AlignmentGeometry? rotateAlignment;
   final void Function(Canvas canvas, Offset offset) onDraw;
   final Stream<dynamic>? stream;
+
   MarkerX({
     required this.point,
     this.key,
@@ -23,10 +24,14 @@ class MarkerX {
     this.rotate,
     this.rotateOrigin,
     this.rotateAlignment,
-    AnchorPos<dynamic>? anchorPos,
+    AnchorPos? anchorPos,
     required this.onDraw,
     this.stream,
-  }) : anchor = Anchor.forPos(anchorPos, width, height);
+  }) : anchor = Anchor.fromPos(
+    anchorPos ?? AnchorPos.align(AnchorAlign.center),
+    width,
+    height,
+  );
 }
 
 class MarkerLayerX extends StatefulWidget {
