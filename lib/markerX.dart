@@ -18,6 +18,7 @@ class MarkerX {
   final Offset? rotateOrigin;
   final AlignmentGeometry? rotateAlignment;
   final void Function(Canvas canvas, Offset offset) onDraw;
+  final void Function()? onTap;
   final Stream<dynamic>? stream;
 
   MarkerX({
@@ -30,6 +31,7 @@ class MarkerX {
     this.rotateAlignment,
     AnchorPos? anchorPos,
     required this.onDraw,
+    this.onTap,
     this.stream,
   }) : anchor = Anchor.fromPos(
           anchorPos ?? AnchorPos.align(AnchorAlign.center),
@@ -118,6 +120,7 @@ class _MarkerLayerXState extends State<MarkerLayerX> {
       _putMarkers(newBound, widget.markers);
       visibleMarkers = _getVisibleMarkers();
     }
+
     final markerWidgets = visibleMarkers.map((marker) {
       final pxPoint = map.project(marker.point);
       final rightPortion = marker.width - marker.anchor.left;
@@ -125,7 +128,7 @@ class _MarkerLayerXState extends State<MarkerLayerX> {
       final bottomPortion = marker.height - marker.anchor.top;
       final topPortion = marker.anchor.top;
       final pos = pxPoint - map.pixelOrigin;
-      final markerWidget = (marker.rotate ?? widget.rotate)
+      Widget markerWidget = (marker.rotate ?? widget.rotate)
           ? Transform.rotate(
               angle: -map.rotationRad,
               origin: marker.rotateOrigin ?? widget.rotateOrigin,
@@ -141,6 +144,10 @@ class _MarkerLayerXState extends State<MarkerLayerX> {
                 painter: _MarkerPainter(marker.onDraw),
               ),
             );
+      markerWidget = GestureDetector(
+        onTap: marker.onTap,
+        child: markerWidget,
+      );
       return Positioned(
         key: marker.key,
         width: marker.width,
